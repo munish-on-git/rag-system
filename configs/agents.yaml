@@ -1,15 +1,19 @@
 # configs/agents.yaml
 model:
-  provider: "groq"   # free tier, no credit card: console.groq.com
-  guardrail_model: "meta-llama/llama-prompt-guard-2-86m"  # purpose-built jailbreak/injection classifier
+  provider: "groq"
+  guardrail_model: "meta-llama/llama-prompt-guard-2-86m"
   generation_model: "openai/gpt-oss-120b"
 
 retrieval:
-  strategy: "passage_baseline"   # winner: recall@5=0.4707, recall@20=0.6297, mrr@10=0.3196 (see data/eval/retrieval_comparison.json)
-  top_k: 5
+  strategy: "passage_baseline"
+  candidate_k: 20    # pulled from FAISS before reranking
+  top_k: 5           # kept after reranking, sent to the generator
+  reranker_model: "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
 
 guardrails:
   input_check: true
-  jailbreak_threshold: 0.5   # Meta's model-card-recommended threshold for Prompt Guard 2
+  jailbreak_threshold: 0.5
   output_grounding_check: true
-  min_context_overlap: 0.15   # heuristic: fraction of answer words that must appear in retrieved context
+  min_context_overlap: 0.35   # raised from 0.15 -- old value let out-of-corpus
+                               # answers through when the LLM used pretrained
+                               # knowledge instead of the retrieved context
