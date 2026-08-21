@@ -23,3 +23,7 @@ models/*
 # negation needed here, just being explicit for clarity
 !data/index/
 !data/index/**
+data/index/sentence_window.faiss
+data/index/sentence_window_meta.jsonl
+data/index/metadata_aware.faiss
+data/index/metadata_aware_meta.jsonl
