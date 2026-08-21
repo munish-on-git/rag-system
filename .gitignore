@@ -1,4 +1,5 @@
 data/raw/*
+models/
 data/processed/*
 data/chunks/*
 !data/**/.gitkeep
@@ -6,3 +7,9 @@ data/chunks/*
 __pycache__/
 *.pyc
 .venv/
+!models/embedder-indic-finetuned/
+!data/index/
+!data/index/**
+!models/embedder-indic-finetuned/
+!data/index/
+!data/index/**
