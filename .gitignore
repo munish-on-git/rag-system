@@ -1,17 +1,25 @@
-data/raw/*
-models/
-data/processed/*
-data/chunks/*
-!data/**/.gitkeep
-.env
+# Local dev clutter
+.DS_Store
 __pycache__/
 *.pyc
 .venv/
+.env
+
+# Raw and intermediate data stays out of git (rebuildable via loader.py/
+# semantic_chunker.py) -- but keep the folder structure via .gitkeep
+data/raw/*
+data/processed/*
+data/chunks/*
+!data/**/.gitkeep
+
+# Models are gitignored by default (large, rebuildable via finetune.py)...
+models/*
+# ...except the one checkpoint the deployed app actually needs
 !models/embedder-indic-finetuned/
+!models/embedder-indic-finetuned/**
+
+# data/index (FAISS + meta) IS needed at runtime -- keep it despite
+# being under data/, which nothing above already excludes, so no
+# negation needed here, just being explicit for clarity
 !data/index/
 !data/index/**
-!models/embedder-indic-finetuned/
-!data/index/
-!data/index/**
-.DS_Store
-.DS_Store

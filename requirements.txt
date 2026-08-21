@@ -7,3 +7,4 @@ numpy
 pyyaml
 requests
 datasets
+python-multipart
