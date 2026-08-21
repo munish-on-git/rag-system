@@ -19,6 +19,7 @@ Usage (voice, the real pipeline):
 """
 
 import os
+from dotenv import load_dotenv 
 import time
 from typing import TypedDict, Optional
 
@@ -30,6 +31,7 @@ from sentence_transformers import SentenceTransformer
 from src.indexing.vector_store import VectorStore
 from src.stt.sarvam_client import SarvamSTTClient, SarvamSTTError
 
+load_dotenv()
 # Groq: free tier, no credit card, OpenAI-compatible, and fast (LPU hardware) --
 # the speed matters directly for the generation-latency numbers.
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
