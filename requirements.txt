@@ -1,0 +1,9 @@
+gradio
+langgraph
+groq
+sentence-transformers
+faiss-cpu
+numpy
+pyyaml
+requests
+datasets

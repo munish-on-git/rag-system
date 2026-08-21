@@ -13,3 +13,5 @@ __pycache__/
 !models/embedder-indic-finetuned/
 !data/index/
 !data/index/**
+.DS_Store
+.DS_Store

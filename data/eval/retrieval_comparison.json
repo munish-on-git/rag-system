@@ -1,0 +1,23 @@
+{
+  "passage_baseline": {
+    "recall@5": 0.4707,
+    "recall@10": 0.5481,
+    "recall@20": 0.6297,
+    "mrr@10": 0.3196,
+    "n_queries": 478
+  },
+  "sentence_window": {
+    "recall@5": 0.4519,
+    "recall@10": 0.5377,
+    "recall@20": 0.613,
+    "mrr@10": 0.3087,
+    "n_queries": 478
+  },
+  "metadata_aware": {
+    "recall@5": 0.4707,
+    "recall@10": 0.5481,
+    "recall@20": 0.6297,
+    "mrr@10": 0.3196,
+    "n_queries": 478
+  }
+}

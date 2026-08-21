@@ -1,0 +1,28 @@
+# configs/embedding.yaml
+#
+# Read by src/embedding/encode.py to decide which model embeds your
+# document chunks before they go into the vector store.
+
+model:
+  # Set to true once models/embedder-indic-finetuned/ is populated.
+  # Set to false to fall back to the base model (e.g. for a quick sanity
+  # check, or if the fine-tuned checkpoint isn't ready yet).
+  use_finetuned: true
+
+  base_model: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+  finetuned_path: "models/embedder-indic-finetuned"
+
+  # MiniLM-L12-v2 outputs 384-dim vectors. Fine-tuning changes the weights,
+  # not the architecture, so this stays 384 regardless of use_finetuned.
+  # IMPORTANT: this must match the vector dimension you configure when you
+  # create the Qdrant/pgvector collection in src/indexing/vector_store.py —
+  # if they don't match, inserts will fail.
+  dimension: 384
+
+  max_seq_length: 256
+  normalize_embeddings: true   # required if the vector DB uses cosine similarity
+
+inference:
+  # "mps" on Apple Silicon, "cuda" if you ever run this on a GPU box, "cpu" otherwise
+  device: "cpu"
+  batch_size: 32
