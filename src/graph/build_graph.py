@@ -14,6 +14,7 @@ Usage (voice, the real pipeline):
 
 import csv
 import os
+from dotenv import load_dotenv
 import time
 from pathlib import Path
 from typing import TypedDict, Optional
@@ -25,6 +26,8 @@ from sentence_transformers import SentenceTransformer, CrossEncoder
 
 from src.indexing.vector_store import VectorStore
 from src.stt.sarvam_client import SarvamSTTClient, SarvamSTTError
+
+load_dotenv()
 
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 stt_client = SarvamSTTClient(api_key=os.environ["SARVAM_API_KEY"])
