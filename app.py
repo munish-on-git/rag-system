@@ -1,25 +1,36 @@
 """
-app.py
-
 Gradio app for Hugging Face Spaces -- the "live working link" deliverable.
 Wraps the existing harness (src/graph/build_graph.py) with a mic-input UI.
+
+Uses the storage-constrained sliced index (data/index_deploy/, ~450k
+passages) rather than the full local 953k-passage index -- HF free tier
+caps Space storage at 1GB, which the full index alone would exceed. See
+src/indexing/build_deploy_index.py. Local eval scripts (retrieval_metrics.py)
+still use the full data/index/ set for honest, reported recall numbers.
 
 Local run:
     python app.py
 
-Deploy: push this file + requirements.txt + models/ + data/index/ + configs/
-to a Hugging Face Space (see deploy notes at the bottom of this file).
+Deploy notes at the bottom of this file.
 """
+
+import os
+
+# Must be set before build_graph.py (and therefore vector_store.py) is
+# imported, so VectorStore resolves to the smaller deployed index.
+os.environ.setdefault("RAG_INDEX_DIR", "data/index_deploy")
 
 import time
 
 import gradio as gr
+import spaces
 
 from src.graph.build_graph import build_app
 
 app = build_app()
 
 
+@spaces.GPU
 def answer_question(audio_filepath):
     if audio_filepath is None:
         return "Please record a question first.", "", ""
@@ -54,7 +65,7 @@ def answer_question(audio_filepath):
 
 with gr.Blocks(title="Voice RAG — HH Goa 2026") as demo:
     gr.Markdown("# 🎙️ Voice-Enabled RAG\nAsk a question by voice (Hindi supported). "
-                "Pipeline: Sarvam STT → guardrail → FAISS retrieval → generation → grounding check.")
+                "Pipeline: Sarvam STT → guardrail → FAISS retrieval → rerank → generation → grounding check.")
 
     audio_input = gr.Audio(sources=["microphone"], type="filepath", label="Ask your question")
     submit_btn = gr.Button("Submit", variant="primary")
@@ -72,23 +83,7 @@ with gr.Blocks(title="Voice RAG — HH Goa 2026") as demo:
 if __name__ == "__main__":
     demo.launch()
 
-# --- Deploy to Hugging Face Spaces ---
-#
-# 1. huggingface.co/new-space -> SDK: Gradio -> create
-# 2. In the Space's Files tab (or via git), upload:
-#      - this file, renamed to app.py (already named correctly)
-#      - requirements.txt (see below)
-#      - the full src/ folder
-#      - configs/
-#      - models/embedder-indic-finetuned/  (your fine-tuned checkpoint)
-#      - data/index/  (the FAISS indexes + *_meta.jsonl -- NOT the raw
-#        data/chunks or data/processed, those aren't needed at runtime)
-# 3. In Space Settings -> Repository secrets, add:
-#      GROQ_API_KEY
-#      SARVAM_API_KEY
-# 4. Space auto-builds and gives you a public URL -- that's your live link.
-#
-# Size note: models/ + data/index/ together are a few hundred MB. Spaces
-# free tier handles this fine, but use git-lfs if pushing via git rather
-# than the web upload UI, since GitHub-style small-file uploads choke on
-# .faiss/.npy files that size.
+# --- Deploy notes ---
+# Secrets needed in Space Settings -> Repository secrets:
+#   GROQ_API_KEY
+#   SARVAM_API_KEY

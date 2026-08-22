@@ -1,6 +1,4 @@
 """
-src/indexing/vector_store.py
-
 Builds one FAISS index per chunking strategy from the embeddings encode.py
 produced, and provides a VectorStore class the retriever agent uses at
 query time. In-process FAISS on purpose -- no network hop to a hosted
@@ -28,7 +26,10 @@ import faiss
 import numpy as np
 
 EMBEDDINGS_DIR = Path("data/chunks/embeddings")
-INDEX_DIR = Path("data/index")
+# INDEX_DIR override lets the deployed app (storage-constrained) point at
+# data/index_deploy/ (the sliced-down index) while local eval scripts keep
+# using the full data/index/ (953k passages) for honest recall numbers.
+INDEX_DIR = Path(os.environ.get("RAG_INDEX_DIR", "data/index"))
 
 
 def build_index(strategy: str):
@@ -64,7 +65,17 @@ class VectorStore:
         self.strategy = strategy
         self.index = faiss.read_index(str(INDEX_DIR / f"{strategy}.faiss"))
         self.meta = []
-        with open(INDEX_DIR / f"{strategy}_meta.jsonl") as f:
+
+        gz_path = INDEX_DIR / f"{strategy}_meta.jsonl.gz"
+        plain_path = INDEX_DIR / f"{strategy}_meta.jsonl"
+
+        if gz_path.exists():
+            import gzip
+            opener = lambda: gzip.open(gz_path, "rt", encoding="utf-8")
+        else:
+            opener = lambda: open(plain_path, encoding="utf-8")
+
+        with opener() as f:
             for line in f:
                 self.meta.append(json.loads(line))
 
