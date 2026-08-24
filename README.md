@@ -1,100 +1,115 @@
 # Voice-Enabled Hindi RAG System
 
-## Deploy 200K indexed passages - https://huggingface.co/spaces/MunishHF/Rag_System
-An end-to-end **voice-enabled Retrieval-Augmented Generation system** built on the Hindi portion of the **MSMARCO-XI dataset**.
+**Live demo (Hugging Face Space):** https://huggingface.co/spaces/MunishHF/Rag_System
 
-The system accepts a spoken or text query, converts voice to text, rewrites the query when necessary, retrieves relevant information from a large Hindi corpus, reranks the retrieved passages, compresses the context, and generates a grounded answer with guardrails against unsupported or off-topic responses.
+An end-to-end voice-enabled Retrieval-Augmented Generation system built on the Hindi
+portion of the MSMARCO-XI dataset. Built for the **HH Goa 2026 – Build a Voice-Enabled
+RAG Model** task.
 
-This project was built for the **HH Goa 2026 – Build a Voice-Enabled RAG Model** task.
+The system accepts a spoken query, transcribes it, retrieves relevant passages from a
+Hindi corpus using a fine-tuned embedder and FAISS, reranks the results with a
+cross-encoder, generates a citation-grounded answer, and checks that answer against the
+retrieved context before returning it — with logging at every stage.
 
 ---
 
-## Overview
-
-The system is designed as a complete RAG pipeline rather than a simple:
-
-> Prompt → LLM → Answer
-
-Instead, the pipeline uses multiple specialized components for retrieval quality, orchestration, answer grounding, evaluation, and observability.
-
-### Pipeline
+## Pipeline (what's actually running)
 
 ```text
-Voice Input
+Voice input
     │
     ▼
-Speech-to-Text
+Speech-to-text (Sarvam Saaras v3)
     │
     ▼
-Query Rewriting
+Input guardrail (Llama Prompt Guard 2 — jailbreak/injection classifier)
     │
     ▼
-Hybrid Retrieval
-    │
-    ├── Vector Search
-    └── Keyword / Lexical Retrieval
+Vector retrieval (FAISS, fine-tuned embedder, top ~20 candidates)
     │
     ▼
-Candidate Retrieval
+Cross-encoder reranking (top 5)
     │
     ▼
-Cross-Encoder Reranking
+Answer generation (citation-forcing prompt, temperature=0)
     │
     ▼
-Context Compression
+Output guardrail (context-overlap grounding check)
     │
     ▼
-Grounding / Guardrail Checks
-    │
-    ▼
-Answer Generation
-    │
-    ▼
-Final Response + Query Logging
+Final answer + full query log (data/eval/query_log.csv)
+```
 
-# Runbook
+**Not currently implemented** (present as empty scaffolding / documented as future work,
+not wired into the running pipeline): hybrid keyword search, query rewriting, context
+compression. See "Known limitations" below for why, and what's there instead.
 
-Reproduces every metric in this repo's submission, from a fresh clone. All commands here
-run **entirely locally** against the full 953k-passage corpus — they never call the
-deployed Hugging Face Space, which runs a separate, storage-constrained 200k-passage/fp16
-copy of this same system (see "Local vs. deployed" at the bottom).
+---
 
-Run these in order from the repo root.
+## Two versions of this system: local (full) vs. deployed (constrained)
 
-## 0. Setup
+| | Local (`data/index/`) | Deployed Space (`data/index_deploy/`) |
+|---|---|---|
+| Corpus size | 953,398 passages | 200,000 passages |
+| Embedder precision | fp32 | fp16 |
+| Why smaller for deploy | — | Hugging Face free-tier Space storage caps at 1GB total; the full fp32 model + full index exceed that |
+
+All retrieval and latency numbers in this repo's submission were measured **locally**,
+against the full 953k-passage corpus. The deployed Space is a legitimate, smaller
+version of the same architecture, not a different system.
+
+`app.py` decides which index to load via the `RAG_INDEX_DIR` environment variable
+(defaults to `data/index_deploy/` for Space deployment). To run `app.py` locally against
+the full 953k corpus instead, set it explicitly before launching:
+
+```bash
+export RAG_INDEX_DIR=data/index
+python app.py
+```
+
+---
+
+## Setup
 
 ```bash
 git clone https://github.com/munish-on-git/rag-system.git
 cd rag-system
 pip install -r requirements.txt --break-system-packages
-export GROQ_API_KEY=your_key
-export SARVAM_API_KEY=your_key
+export GROQ_API_KEY=your_key       # console.groq.com — generation + guardrail models
+export SARVAM_API_KEY=your_key     # sarvam.ai — speech-to-text
 ```
 
-## 1. Rebuild the full local corpus (953k passages)
+This repo contains **code only** — no data, embeddings, index, or model weights are
+committed (they'd be several GB). Rebuild them locally with the steps below.
 
-Check first: `ls -lh data/chunks/embeddings/` — if `passage_baseline.npy` is already there,
-skip to step 2. This step alone took ~12 hours on a laptop; don't re-run it casually.
+## 1. Build the full local corpus (953,398 passages)
+
+Check first — if `data/chunks/embeddings/passage_baseline.npy` already exists locally,
+skip to step 2. This step took roughly 12 hours on a laptop CPU; don't re-run casually.
+
+`--end` in the loader is a **row index into the source MSMARCO-XI dataset**, not a
+passage count (each row expands to several passages) — `--end 210000` is what actually
+produces the 953k-passage corpus used throughout this repo:
 
 ```bash
-python -m src.ingestion.loader --langs hi --end 953398
+python -m src.ingestion.loader --langs hi --end 210000
 python -m src.chunking.semantic_chunker
 python -m src.embedding.encode --strategies passage_baseline
 ```
 
-## 2. Build the local FAISS index from existing embeddings (seconds, not hours)
+## 2. Build the local FAISS index (seconds, not hours — reuses the embeddings above)
 
 ```bash
 python -m src.indexing.vector_store
 ```
 
-Expected output — note the three strategies intentionally have different vector counts
-(see the strategy-comparison caveat below, this is not a bug):
+Expected:
 ```
 [passage_baseline] indexed 953398 vectors, dim=384 -> data/index/passage_baseline.faiss
-[sentence_window] indexed 307149 vectors, dim=384 -> data/index/sentence_window.faiss
-[metadata_aware] indexed 206351 vectors, dim=384 -> data/index/metadata_aware.faiss
 ```
+
+(`sentence_window` and `metadata_aware` also get built here, at smaller vector counts —
+see the strategy-comparison caveat below before comparing them to `passage_baseline`.)
 
 ## 3. Retrieval quality — Recall@k and MRR
 
@@ -102,24 +117,16 @@ Expected output — note the three strategies intentionally have different vecto
 python -m src.eval.retrieval_metrics
 ```
 
-**Read the strategy-comparison caveat below before interpreting this output** — the three
-strategies are evaluated against indexes of different sizes, so the printed "best recall@5"
-recommendation is not a fair comparison. `passage_baseline` (953k) is the configured,
-reported strategy.
-
-Sanity-check index coverage if numbers look off:
+Sanity-check index/eval-set alignment if numbers look off:
 ```bash
 python -m src.eval.diagnose_recall
 ```
 
-## 4. End-to-end harness sanity check (text path, one query)
+## 4. End-to-end harness check (text query, no audio needed)
 
 ```bash
 python -m src.graph.build_graph
 ```
-
-Confirms the full graph — guardrail, retrieval, rerank, generation, grounding check,
-logging — runs without error and returns a grounded, cited answer.
 
 ## 5. Latency benchmark — P50/P70/P100
 
@@ -127,65 +134,60 @@ logging — runs without error and returns a grounded, cited answer.
 python -m src.eval.latency_bench
 ```
 
-Reports retrieval-only latency (the <200ms target) and retrieval+generation latency
-separately. Logs every run to `data/eval/latency_log.csv`.
+Reports retrieval-only latency and retrieval+generation latency separately, logged to
+`data/eval/latency_log.csv`.
 
-## 6. Full query log — every request, every stage
+## 6. Inspect the full query log
 
 ```bash
 cat data/eval/query_log.csv
 ```
 
-Columns: timestamp, query, blocked/block_reason, retrieved chunk IDs + scores, reranked
-chunk IDs, answer, grounded flag, overlap score, per-stage latency.
+Every request: query, block status, retrieved/reranked chunk IDs and scores, answer,
+grounded flag, overlap score, per-stage latency.
 
-## 7. Run the voice app locally
+## 7. Run the voice app locally, against the full 953k corpus
 
 ```bash
+export RAG_INDEX_DIR=data/index
 python app.py
 ```
 
-Opens a Gradio UI with microphone input. Reads `data/index/` (the storage-constrained
-slice).Rebuild it if missing:
+Opens a Gradio UI with microphone input at `http://127.0.0.1:7860`.
+
+To instead reproduce exactly what the deployed Space runs (200k-passage, fp16 slice):
 
 ```bash
-python -m src.indexing.build_deploy_index --max-passages 953398
-gzip -kf data/index/passage_baseline_meta.jsonl
-rm data/index/passage_baseline_meta.jsonl
-python app.py
+python -m src.indexing.build_deploy_index --max-passages 200000
+gzip -kf data/index_deploy/passage_baseline_meta.jsonl
+rm data/index_deploy/passage_baseline_meta.jsonl
+python app.py   # RAG_INDEX_DIR unset -> defaults to data/index_deploy/
 ```
 
 ---
 
-## Local vs. deployed — two separate systems, same architecture
+## Strategy-comparison caveat
 
-| | Local (this runbook) | Deployed (Hugging Face Space) |
-|---|---|---|
-| Corpus size | 953,398 passages | 200,000 passages |
-| Embedder | fp32 | fp16 |
-| Index location | `data/index/` | 
-| Reason for the difference | None — this is the full system | Hugging Face free-tier Space storage caps at 1GB; the full corpus + fp32 model exceed that |
+`retrieval_metrics.py` evaluates three chunking strategies, but only `passage_baseline`
+was rebuilt at the full 953k scale — `sentence_window` (307k) and `metadata_aware` (206k)
+reflect an earlier, smaller corpus. A larger index is a strictly harder retrieval task, so
+`passage_baseline`'s numbers are **not directly comparable** to the other two as currently
+built, and the script's own "best recall@5" suggestion should be ignored until all three
+are rebuilt at matching scale. `configs/agents.yaml` intentionally stays on
+`passage_baseline` — the only strategy verified at full scale.
 
-All retrieval/latency numbers in the submission were measured **locally**, against the full
-953k corpus, using the commands above — not against the deployed Space.
+## Known limitations (stated plainly)
 
-## Strategy-comparison caveat — read before trusting "best recall@5"
-
-`retrieval_metrics.py` evaluates all three chunking strategies, but **only `passage_baseline`
-was rebuilt at full 953k scale**; `sentence_window` (307k) and `metadata_aware` (206k) still
-reflect an earlier, smaller corpus size. A larger index is a strictly harder retrieval
-task — more near-duplicate and plausible-but-wrong candidates compete for the top-k slots —
-so `passage_baseline`'s recall numbers are **not directly comparable** to the other two in
-the current output, and the script's own "best recall@5, switch to X" suggestion should be
-**ignored** until all three are rebuilt at the same scale. `configs/agents.yaml` is
-intentionally left on `passage_baseline`, the only strategy actually verified at full scale.
-
-## Known, documented limitations (stated plainly, not hidden)
-
-- Deployed corpus (200k) and embedder precision (fp16) are both smaller than the local,
-  fully-evaluated system (953k, fp32), due to Hugging Face's free-tier 1GB storage limit.
-- `metadata_aware`'s extra fields (keywords, language tag) exist but aren't yet used as
-  retrieval filters — the capability is built, the filtering hook isn't wired in, due to
-  time constraints.
-- Chunking-strategy comparison numbers are not apples-to-apples until all three are
-  rebuilt at matching corpus scale (see caveat above).
+- **Deployed corpus/precision are reduced** (200k passages, fp16) vs. the full local
+  system (953k, fp32), due to Hugging Face's free-tier 1GB Space storage limit.
+- **Grounding check is a word-overlap heuristic**, not a hard semantic constraint. Testing
+  found it can be fooled by out-of-corpus questions that share common vocabulary with
+  unrelated retrieved passages (e.g., a general-knowledge question retrieving passages
+  that happen to share a few words), letting the LLM answer from its own pretrained
+  knowledge rather than declining. A stricter or LLM-judged grounding check would close
+  this gap; not implemented due to time and added-latency tradeoffs.
+- **Hybrid (keyword) search, query rewriting, and context compression** are not wired
+  into the pipeline — `src/indexing/keyword_store.py` exists as scaffolding but is unused.
+  Cut for time; pure vector retrieval + reranking was sufficient to hit the latency target.
+- **`metadata_aware`'s extra fields** (keywords, language tag) exist but aren't used as
+  retrieval filters yet — the capability is built, the filtering hook isn't wired in.
