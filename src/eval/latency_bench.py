@@ -1,17 +1,3 @@
-"""
-src/eval/latency_bench.py
-
-Runs a batch of test queries through the harness, times each stage
-separately (retrieval, generation, guardrails, total), and reports
-P50/P70/P100 -- the exact numbers the submission requires. STT is timed
-separately via the Sarvam client's own latency_ms field, not included here,
-since it's a genuinely separate pipeline stage (see submission notes on
-why the <200ms target applies to retrieval, not the full voice pipeline).
-
-Usage:
-    python -m src.eval.latency_bench
-"""
-
 import csv
 import time
 from pathlib import Path

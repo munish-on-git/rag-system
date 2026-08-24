@@ -1,14 +1,8 @@
-"""
-src/eval/retrieval_metrics.py
 
-Builds a small eval set from a slice of MSMARCO-XI NOT used in loader.py
-(rows 20000:21000, vs loader.py's 0:20000 -- no contamination), then measures
-Recall@k and MRR@10 for each chunking strategy's FAISS index. This is what
-justifies which strategy you actually ship, instead of guessing.
-
-Usage:
-    python -m src.eval.retrieval_metrics
-"""
+# Builds a small eval set from a slice of MSMARCO-XI NOT used in loader.py
+# (rows 20000:21000, vs loader.py's 0:20000 -- no contamination), then measures
+# Recall@k and MRR@10 for each chunking strategy's FAISS index. This is what
+# justifies which strategy you actually ship, instead of guessing.
 
 import os
 # Must be set before faiss/torch are imported -- FAISS and PyTorch both try

@@ -1,16 +1,14 @@
-"""
-The harness: audio -> STT (Sarvam) -> input guardrail (Prompt Guard) ->
-retrieve -> rerank -> generate -> output guardrail (grounding check) -> log.
+# The harness: audio -> STT (Sarvam) -> input guardrail (Prompt Guard) ->
+# retrieve -> rerank -> generate -> output guardrail (grounding check) -> log.
 
-Usage (text, for local testing):
-    from src.graph.build_graph import build_app
-    app = build_app()
-    result = app.invoke({"query": "मॉर्गेज क्या है?"})
-    print(result["answer"])
+# Usage (text, for local testing):
+#     from src.graph.build_graph import build_app
+#     app = build_app()
+#     result = app.invoke({"query": "मॉर्गेज क्या है?"})
+#     print(result["answer"])
 
-Usage (voice, the real pipeline):
-    result = app.invoke({"audio_bytes": raw_bytes, "audio_filename": "recording.webm"})
-"""
+# Usage (voice, the real pipeline):
+#     result = app.invoke({"audio_bytes": raw_bytes, "audio_filename": "recording.webm"})
 
 import csv
 import os

@@ -1,28 +1,3 @@
-"""
-src/chunking/semantic_chunker.py
-
-Three chunking strategies over data/processed/passages.jsonl, each written
-to its own file in data/chunks/ so you can compare/evaluate them separately
-in retrieval_metrics.py and show real thought behind the choice, not one
-naive fixed-size splitter.
-
-Strategies:
-  1. passage_baseline   - 1 passage = 1 chunk, no splitting. The naive
-                           control group -- included on purpose, so the
-                           other two strategies have something to be
-                           measured against.
-  2. sentence_window     - splits on sentence boundaries (never mid-sentence),
-                           groups sentences into ~max_tokens windows with
-                           overlap_sentences carried into the next window.
-  3. metadata_aware      - passage-level chunks (like #1) but enriched with
-                           extracted keyword metadata and language tag, so
-                           retrieval can filter/boost before the vector
-                           search even runs.
-
-Usage:
-    python src/chunking/semantic_chunker.py
-"""
-
 import json
 import re
 from collections import Counter

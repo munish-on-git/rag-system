@@ -1,12 +1,3 @@
-"""
-src/stt/sarvam_client.py
-
-Sarvam Saaras v3 speech-to-text client -- lifted directly from the working
-Colab notebook (voice_to_sarvam_stt_colab.py), unchanged in logic, just
-relocated into the repo so build_graph.py can import it as the harness's
-entry node instead of it living only in a notebook.
-"""
-
 import mimetypes
 import time
 from dataclasses import dataclass

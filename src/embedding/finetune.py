@@ -1,26 +1,3 @@
-"""
-src/embedding/finetune.py
-
-Fine-tunes a sentence-transformers embedding model on
-data/finetune/msmarco_xi_triplets.jsonl (built by prepare_finetune_data.py).
-
-This is the step that actually changes the MODEL's weights so it embeds
-Hindi (or whichever --langs you prepped) query/passage pairs more accurately.
-It does NOT touch or clean your own documents — see chunking/ for that.
-
---- Running locally (CPU or Apple Silicon MPS) ---
-    pip install sentence-transformers --break-system-packages
-    python src/embedding/finetune.py
-
---- Running on Google Colab (recommended for anything beyond ~20k triplets) ---
-    1. Upload data/finetune/msmarco_xi_triplets.jsonl to your Colab session
-       or Google Drive (Runtime > Change runtime type > GPU first).
-    2. !pip install sentence-transformers
-    3. !python finetune.py --data msmarco_xi_triplets.jsonl --output /content/drive/MyDrive/bge-m3-indic-finetuned
-    4. Download the output folder (or leave it on Drive) and copy it back
-       into your local repo under models/ when done.
-"""
-
 import argparse
 import json
 import random

@@ -1,9 +1,9 @@
 {
   "passage_baseline": {
-    "recall@5": 0.4707,
-    "recall@10": 0.5481,
-    "recall@20": 0.6297,
-    "mrr@10": 0.3196,
+    "recall@5": 0.3452,
+    "recall@10": 0.4372,
+    "recall@20": 0.5084,
+    "mrr@10": 0.2415,
     "n_queries": 478
   },
   "sentence_window": {

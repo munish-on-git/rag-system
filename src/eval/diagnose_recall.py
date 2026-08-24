@@ -1,14 +1,3 @@
-"""
-src/eval/diagnose_recall.py
-
-Checks whether the low recall numbers are a genuine retrieval failure or
-an index-coverage issue: for each eval query's known positive passage,
-is that passage's id even present among the indexed chunks?
-
-Usage:
-    python -m src.eval.diagnose_recall
-"""
-
 import json
 from pathlib import Path
 

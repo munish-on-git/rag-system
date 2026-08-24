@@ -1,24 +1,8 @@
-"""
-Gradio app for Hugging Face Spaces -- the "live working link" deliverable.
-Wraps the existing harness (src/graph/build_graph.py) with a mic-input UI.
-
-Uses the storage-constrained sliced index (data/index_deploy/, ~450k
-passages) rather than the full local 953k-passage index -- HF free tier
-caps Space storage at 1GB, which the full index alone would exceed. See
-src/indexing/build_deploy_index.py. Local eval scripts (retrieval_metrics.py)
-still use the full data/index/ set for honest, reported recall numbers.
-
-Local run:
-    python app.py
-
-Deploy notes at the bottom of this file.
-"""
-
 import os
 
 # Must be set before build_graph.py (and therefore vector_store.py) is
 # imported, so VectorStore resolves to the smaller deployed index.
-os.environ.setdefault("RAG_INDEX_DIR", "data/index_deploy")
+os.environ.setdefault("RAG_INDEX_DIR", "data/index")
 
 import time
 

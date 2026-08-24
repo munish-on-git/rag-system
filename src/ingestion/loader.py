@@ -1,21 +1,3 @@
-"""
-src/ingestion/loader.py
-
-Pulls the actual knowledge-base passages out of MSMARCO-XI (both the
-is_selected=1 and is_selected=0 passages -- for the RAG corpus, ALL of them
-are valid retrievable documents, unlike finetune data prep where only the
-selected one counted as a positive). Dedupes by text hash and writes to
-data/processed/ as JSONL, ready for semantic_chunker.py.
-
-IMPORTANT: --end must cover whatever row range retrieval_metrics.py evaluates
-against (currently rows 20000:21000), or eval positives won't exist in your
-index and recall will look like a retrieval failure when it's actually a
-coverage gap. Default range below covers 0:21000 for exactly this reason.
-
-Usage:
-    python -m src.ingestion.loader --langs hi --end 21000
-"""
-
 import argparse
 import hashlib
 import itertools

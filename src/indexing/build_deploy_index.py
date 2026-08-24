@@ -1,18 +1,16 @@
-"""
-You already have the full 953k-passage embeddings encoded locally --
-re-embedding a smaller slice would waste the ~12 hours you already spent.
-This instead takes the FIRST N rows of the existing .npy + meta.jsonl
-(already in the order they were encoded, no reshuffling needed) and builds
-a separate, smaller FAISS index sized to fit Hugging Face's free 1GB
-Space storage quota alongside your model checkpoint.
+# You already have the full 953k-passage embeddings encoded locally --
+# re-embedding a smaller slice would waste the ~12 hours you already spent.
+# This instead takes the FIRST N rows of the existing .npy + meta.jsonl
+# (already in the order they were encoded, no reshuffling needed) and builds
+# a separate, smaller FAISS index sized to fit Hugging Face's free 1GB
+# Space storage quota alongside your model checkpoint.
 
-Your full 953k index stays local for retrieval_metrics.py evaluation
-(report those numbers honestly in your writeup) -- this smaller one is
-specifically what gets deployed.
+# Your full 953k index stays local for retrieval_metrics.py evaluation
+# (report those numbers honestly in your writeup) -- this smaller one is
+# specifically what gets deployed.
 
-Usage:
-    python -m src.indexing.build_deploy_index --max-passages 450000
-"""
+# Usage:
+#     python -m src.indexing.build_deploy_index --max-passages 450000
 
 import argparse
 import json

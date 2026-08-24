@@ -1,15 +1,3 @@
-"""
-src/embedding/encode.py
-
-Batch-embeds each data/chunks/{strategy}.jsonl file with the fine-tuned
-embedder from configs/embedding.yaml, saves aligned .npy embeddings +
-.jsonl metadata to data/chunks/embeddings/, ready for vector_store.py.
-
-Usage:
-    python -m src.embedding.encode
-    python -m src.embedding.encode --strategies sentence_window --limit 100000
-"""
-
 import argparse
 import json
 from pathlib import Path

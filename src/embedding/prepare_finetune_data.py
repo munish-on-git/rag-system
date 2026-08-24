@@ -1,19 +1,3 @@
-"""
-src/embedding/prepare_finetune_data.py
-
-Streams ai4bharat/MSMARCO-XI directly from the Hub (no full-file download)
-and writes (query, positive_passage, negative_passage) triplets to
-data/finetune/ as JSONL, ready for finetune.py.
-
-Laptop-friendly by default: reads the smaller validation split and stops
-after --limit rows via streaming, so it never pulls the multi-GB train
-parquet file to disk.
-
-Usage:
-    python src/embedding/prepare_finetune_data.py --langs hi --limit 20000
-    python src/embedding/prepare_finetune_data.py --langs hi bn --limit 10000 --split train
-"""
-
 import argparse
 import itertools
 import json
@@ -33,10 +17,8 @@ LANG_PREFIX = {
 
 
 def stream_split(lang: str, split: str, limit: int):
-    """
-    Streams one language's parquet file directly from the Hub — no full
-    download. `split` is "train" or "validation" (validation is much smaller).
-    """
+    # Streams one language's parquet file directly from the Hub — no full
+    # download. `split` is "train" or "validation" (validation is much smaller).
     prefix = LANG_PREFIX[lang]
     folder = "train" if split == "train" else "validation"
     suffix = "train" if split == "train" else "val"

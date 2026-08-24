@@ -1,17 +1,15 @@
-"""
-Builds one FAISS index per chunking strategy from the embeddings encode.py
-produced, and provides a VectorStore class the retriever agent uses at
-query time. In-process FAISS on purpose -- no network hop to a hosted
-vector DB, which matters directly for the <200ms retrieval target.
+# Builds one FAISS index per chunking strategy from the embeddings encode.py
+# produced, and provides a VectorStore class the retriever agent uses at
+# query time. In-process FAISS on purpose -- no network hop to a hosted
+# vector DB, which matters directly for the <200ms retrieval target.
 
-Build usage:
-    python src/indexing/vector_store.py
+# Build usage:
+#     python src/indexing/vector_store.py
 
-Query-time usage (imported elsewhere):
-    from src.indexing.vector_store import VectorStore
-    store = VectorStore("sentence_window")
-    results = store.search(query_embedding, top_k=5)
-"""
+# Query-time usage (imported elsewhere):
+#     from src.indexing.vector_store import VectorStore
+#     store = VectorStore("sentence_window")
+#     results = store.search(query_embedding, top_k=5)
 
 import os
 # Must be set before faiss is imported -- FAISS and PyTorch both grab OpenMP
@@ -59,7 +57,7 @@ def build_index(strategy: str):
 
 
 class VectorStore:
-    """Query-time wrapper: load once, search many times."""
+    # Query-time wrapper: load once, search many times.
 
     def __init__(self, strategy: str):
         self.strategy = strategy
