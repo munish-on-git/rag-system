@@ -188,33 +188,56 @@ Question: {state['query']}"""
 
 
 def output_guardrail(state: RAGState) -> RAGState:
+    """
+    LLM-judged grounding check, replacing the old word-overlap heuristic.
+
+    Why the change: word overlap measures shared VOCABULARY, not whether the
+    answer's specific CLAIMS are actually supported. A retrieved passage
+    sharing topic words with the answer (e.g. "wealth", "value") passed the
+    old check even when the answer added unsupported specifics (e.g. GDP,
+    net worth) not present anywhere in the context. Measured via the
+    organizer's independent eval loop: 82% false-confidence rate on
+    genuinely unanswerable questions -- the system fabricated instead of
+    declining in 4 out of 5 such cases. This is the fix for that finding.
+
+    Cost/latency tradeoff, explicit: this adds one more LLM call per query.
+    Generation is already the latency bottleneck; this makes it worse in
+    absolute terms. Kept anyway because false-confidence (a fabrication
+    presented as fact) is a worse failure mode than added latency for a
+    system that's supposed to demonstrate "knows when not to answer."
+    """
     if "I don't have enough information" in state["answer"]:
-        state["grounded"] = True
+        state["grounded"] = False
         state["overlap_score"] = None
         return state
 
-    context_text = " ".join(r["text"] for r in state["reranked"]).lower()
-    answer_words = [w for w in state["answer"].lower().split() if len(w) >= 4]
-    if not answer_words:
-        state["grounded"] = True
-        state["overlap_score"] = None
-        return state
+    context = "\n\n".join(r["text"] for r in state["reranked"])
 
-    overlap = sum(1 for w in answer_words if w in context_text) / len(answer_words)
-    state["overlap_score"] = round(overlap, 4)
+    judge_prompt = f"""Context:
+{context}
 
-    # Raised threshold (was 0.15) after observing confident out-of-corpus
-    # answers slip through on topics the LLM already knows from pretraining --
-    # a stricter bar catches more of those, at the cost of occasionally
-    # declining a genuinely-grounded but loosely-worded answer.
-    threshold = AGENTS_CFG["guardrails"].get("min_context_overlap", 0.35)
-    state["grounded"] = overlap >= threshold
+Answer to check: {state['answer']}
+
+Is every specific claim in the answer directly supported by the context above?
+Minor rephrasing is fine; new facts, numbers, or claims not present in the
+context are NOT fine, even if topically related.
+
+Respond with exactly one word: SUPPORTED or UNSUPPORTED."""
+
+    resp = client.chat.completions.create(
+        model=AGENTS_CFG["model"]["grounding_judge_model"],
+        max_tokens=5,
+        temperature=0,
+        messages=[{"role": "user", "content": judge_prompt}],
+    )
+    verdict = resp.choices[0].message.content.strip().upper()
+
+    state["grounded"] = verdict.startswith("SUPPORTED")
+    state["overlap_score"] = None  # no longer a meaningful metric with this check
 
     if not state["grounded"]:
-        state["answer"] = ("I don't have enough information to answer that confidently "
-                            "based on the retrieved context.")
+        state["answer"] = "I don't have enough information to answer that."
     return state
-
 
 def log_query(state: RAGState) -> RAGState:
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)

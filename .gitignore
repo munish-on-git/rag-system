@@ -27,3 +27,6 @@ data/index/sentence_window.faiss
 data/index/sentence_window_meta.jsonl
 data/index/metadata_aware.faiss
 data/index/metadata_aware_meta.jsonl
+
+eval/
+run.sh

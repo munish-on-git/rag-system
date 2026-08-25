@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "target_root": "/Users/munishpathania/Desktop/rag-system",
+    "generation_backend": "unknown",
+    "generation_model_hint": "unknown",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 50,
+    "num_unanswerable": 50,
+    "num_examples": 100,
+    "num_chunks": 2391,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 50,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.56,
+        "3": 0.82,
+        "5": 0.88
+      },
+      "mrr": 0.694
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.56,
+        "3": 0.82,
+        "5": 0.88
+      },
+      "mrr": 0.693
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 100,
+    "faithful_rate": 0.64,
+    "hallucination_rate": 0.36,
+    "num_confident_answers": 86,
+    "self_report_precision": 0.5814,
+    "self_report_disagreements": [
+      {
+        "query": "how long for stitches to be removed",
+        "answer": "Stitch‑removal timing depends on the type of wound and the surgeon’s instructions:\n\n* **General skin sutures** – most clinicians keep them in **at least 5 days and no longer than 8 days** to avoid wou",
+        "judge_reason": "The answer adds unsupported general claims about skin sutures and facial healing, and the context does not support the cited source distinctions or the “most clinicians” wording."
+      },
+      {
+        "query": "how to do citations in an essay",
+        "answer": "Citations in an essay have two parts — an in‑text citation that appears where you use the source, and a full entry for that source in a Works Cited (bibliography) after the paper [1].\n\n**1. In‑text ci",
+        "judge_reason": "The answer adds unsupported details like the citation appearing immediately after material and the examples about a film/title that go beyond the context."
+      },
+      {
+        "query": "what is the role as a writer in society",
+        "answer": "The writer’s role in society is to act as a critical, dissenting force that checks and challenges the prevailing values, cultural norms, and authority. According to the provided sources, the writer mu",
+        "judge_reason": "The answer adds unsupported source citations and claims about literature’s active/passive roles beyond the directly provided context."
+      },
+      {
+        "query": "do dolphins have the smell sense",
+        "answer": "The available evidence suggests that dolphins do **not** have a functional sense of smell.  The research notes that while some whales (e.g., bowhead whales) possess a well‑developed olfactory bulb and",
+        "judge_reason": "The context does not directly support the dolphin-specific conclusion or the inference that toothed whales imply dolphins lack smell."
+      },
+      {
+        "query": "what is tlr development",
+        "answer": "TLR development refers to a stage of infant development in which certain muscles and other body areas are growing and maturing. If a child “retains” the TLR, it suggests they moved through this develo",
+        "judge_reason": "The context supports TLR as a time and leave reporting program and also mentions retained TLR in infant development, but it does not support the answer’s combined description about certain muscles and body areas growing and maturing."
+      }
+    ],
+    "hallucinated_examples": [
+      {
+        "query": "how long for stitches to be removed",
+        "answer": "Stitch‑removal timing depends on the type of wound and the surgeon’s instructions:\n\n* **General skin sutures** – most clinicians keep them in **at least 5 days and no longer than 8 days** to avoid wou",
+        "judge_reason": "The answer adds unsupported general claims about skin sutures and facial healing, and the context does not support the cited source distinctions or the “most clinicians” wording."
+      },
+      {
+        "query": "how to do citations in an essay",
+        "answer": "Citations in an essay have two parts — an in‑text citation that appears where you use the source, and a full entry for that source in a Works Cited (bibliography) after the paper [1].\n\n**1. In‑text ci",
+        "judge_reason": "The answer adds unsupported details like the citation appearing immediately after material and the examples about a film/title that go beyond the context."
+      },
+      {
+        "query": "what is the role as a writer in society",
+        "answer": "The writer’s role in society is to act as a critical, dissenting force that checks and challenges the prevailing values, cultural norms, and authority. According to the provided sources, the writer mu",
+        "judge_reason": "The answer adds unsupported source citations and claims about literature’s active/passive roles beyond the directly provided context."
+      },
+      {
+        "query": "do dolphins have the smell sense",
+        "answer": "The available evidence suggests that dolphins do **not** have a functional sense of smell.  The research notes that while some whales (e.g., bowhead whales) possess a well‑developed olfactory bulb and",
+        "judge_reason": "The context does not directly support the dolphin-specific conclusion or the inference that toothed whales imply dolphins lack smell."
+      },
+      {
+        "query": "what is tlr development",
+        "answer": "TLR development refers to a stage of infant development in which certain muscles and other body areas are growing and maturing. If a child “retains” the TLR, it suggests they moved through this develo",
+        "judge_reason": "The context supports TLR as a time and leave reporting program and also mentions retained TLR in infant development, but it does not support the answer’s combined description about certain muscles and body areas growing and maturing."
+      }
+    ]
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 50,
+    "correct_rate": 0.68,
+    "incorrect_examples": [
+      {
+        "query": "when was power rangers released in europe",
+        "reference_answer": "Power rangers was released on 2nd November in Europe.",
+        "answer": "Power Rangers: Super Legends was released in Europe on **2 November** (the European release date)【1†L1-L3】.",
+        "judge_reason": "The answer names a different title and does not clearly answer the release date for Power Rangers in Europe."
+      },
+      {
+        "query": "how long do fly eggs live",
+        "reference_answer": "An adults fly eggs usually live for 15 to 25 days.",
+        "answer": "I don't have enough information to answer that.",
+        "judge_reason": "The answer refuses to answer, but the reference gives a lifespan of 15 to 25 days."
+      },
+      {
+        "query": "gas dryers running cost",
+        "reference_answer": "Gas dryers cost anywhere from about $350 to $1,600.",
+        "answer": "A typical gas‑dryer uses about **0.11 therm of natural gas each hour**, which translates to roughly **$0.11 per hour for the gas**. In addition, the electric motor that turns the drum and the fan cons",
+        "judge_reason": "The answer gives hourly operating cost, not the purchase price range stated in the reference."
+      },
+      {
+        "query": "what types of actions are controlled by smooth muscles",
+        "reference_answer": "Hormones, neurotransmitters and other chemicals such as calcium and potassium are types of actions that are controlled by smooth muscles.",
+        "answer": "Smooth muscles control **involuntary actions** – the automatic contractions of organs and blood vessels. Their contractions are not under voluntary (skeletal‑muscle) control; instead they are driven b",
+        "judge_reason": "The answer changes the question’s target and does not match the reference’s key point about hormones, neurotransmitters, calcium and potassium."
+      },
+      {
+        "query": "why did laozi say that idea",
+        "reference_answer": "Laozi thought that both Communism and Legalism were a little off with there ideas to re-create a better society, so he created the idea of Daoism.",
+        "answer": "I don't have enough information to answer that.",
+        "judge_reason": "The answer refused to answer, but the reference states Laozi thought both Communism and Legalism were off and created Daoism."
+      }
+    ]
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 50,
+    "num_unanswerable_evaluated": 50,
+    "false_refusal_rate": 0.1,
+    "false_refusal_examples": [
+      {
+        "query": "what's the population of guatemala",
+        "expected_answer": "The population of Guatemala is 14,373,472."
+      },
+      {
+        "query": "cost of an average wedding cake",
+        "expected_answer": "The national average cost of wedding cakes will be $451 in 2013, jumping to $466 in 2014."
+      },
+      {
+        "query": "define hoofed",
+        "expected_answer": "Having a hoof or hoofs."
+      },
+      {
+        "query": "what medication treat insulin resistance",
+        "expected_answer": "Medications that reduce insulin resistance include metformin and the thiazolidinediones."
+      },
+      {
+        "query": "which plants live in the sonoran desert?",
+        "expected_answer": "The plants in the Sonoran desert are very interesting, such as fairy duster, jimson weed, tumble weed, night blooming cereus, devils claw, ghost flower, hedgehog cactus and showy four o clock."
+      }
+    ],
+    "false_confidence_rate": 0.82,
+    "false_confidence_examples": [
+      {
+        "query": "how to do citations in an essay",
+        "fabricated_answer": "Citations in an essay have two parts — an in‑text citation that appears where you use the source, and a full entry for that source in a Works Cited (bibliography) after the paper [1].\n\n**1. In‑text ci"
+      },
+      {
+        "query": "who is the person that created transformers",
+        "fabricated_answer": "I don't have enough information to answer that."
+      },
+      {
+        "query": "can hyponatremia cause vertigo",
+        "fabricated_answer": "I don't have enough information to answer that."
+      },
+      {
+        "query": "erie insurance corporate address",
+        "fabricated_answer": "I don't have enough information to answer that."
+      },
+      {
+        "query": "what is tlr development",
+        "fabricated_answer": "TLR development refers to a stage of infant development in which certain muscles and other body areas are growing and maturing. If a child “retains” the TLR, it suggests they moved through this develo"
+      }
+    ]
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 100,
+    "embed": {
+      "avg_ms": 34.41,
+      "p50_ms": 27.59,
+      "p95_ms": 51.82,
+      "p99_ms": 325.6
+    },
+    "search": {
+      "avg_ms": 0.45,
+      "p50_ms": 0.22,
+      "p95_ms": 1.14,
+      "p99_ms": 4.34
+    },
+    "retrieval_total": {
+      "avg_ms": 46.23,
+      "p50_ms": 34.58,
+      "p95_ms": 60.93,
+      "p99_ms": 345.35
+    },
+    "generation": {
+      "avg_ms": 5451.57,
+      "p50_ms": 5100.76,
+      "p95_ms": 7387.62,
+      "p99_ms": 8625.28
+    },
+    "retrieval_latency_budget_ms": 50.0,
+    "retrieval_within_budget": false,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": false
+  }
+}

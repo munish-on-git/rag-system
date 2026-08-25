@@ -3,6 +3,7 @@ model:
   provider: "groq"
   guardrail_model: "meta-llama/llama-prompt-guard-2-86m"
   generation_model: "openai/gpt-oss-120b"
+  grounding_judge_model: "openai/gpt-oss-20b"
 
 retrieval:
   strategy: "passage_baseline"

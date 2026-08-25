@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "target_root": "/Users/munishpathania/Desktop/rag-system",
+    "generation_backend": "unknown",
+    "generation_model_hint": "unknown",
+    "language": "hin",
+    "split": "validation",
+    "num_answerable": 50,
+    "num_unanswerable": 50,
+    "num_examples": 100,
+    "num_chunks": 2391,
+    "top_k": 5,
+    "seed": 42,
+    "num_errored": 0
+  },
+  "retrieval": {
+    "check": "retrieval (reference-based)",
+    "num_evaluated": 50,
+    "top_k": 5,
+    "cross_lingual": {
+      "recall_at_k": {
+        "1": 0.56,
+        "3": 0.82,
+        "5": 0.88
+      },
+      "mrr": 0.694
+    },
+    "same_language": {
+      "recall_at_k": {
+        "1": 0.56,
+        "3": 0.82,
+        "5": 0.88
+      },
+      "mrr": 0.693
+    }
+  },
+  "faithfulness": {
+    "check": "faithfulness / hallucination (reference-free, LLM-as-judge)",
+    "num_evaluated": 100,
+    "faithful_rate": 0.59,
+    "hallucination_rate": 0.41,
+    "num_confident_answers": 86,
+    "self_report_precision": 0.5233,
+    "self_report_disagreements": [
+      {
+        "query": "what is the purpose of the passive-interface command?",
+        "answer": "The passive‑interface command is used to suppress routing updates on a selected interface. It stops the router from exchanging routing information on that interface (i.e., it prevents the receipt of u",
+        "judge_reason": "The answer claims it stops sending updates and exchanges normally on other interfaces, but the context only directly supports suppressing routing updates on some interfaces and does not support the extra EIGRP-specific claim."
+      },
+      {
+        "query": "how to do citations in an essay",
+        "answer": "Citations in an essay have two parts — an in‑text citation that appears where you use the source, and a full entry for that source in a Works Cited (bibliography) after the paper [1].\n\n**1. In‑text ci",
+        "judge_reason": "The answer adds unsupported specifics such as a general rule to cite immediately after material and details about matching entries for each source type."
+      },
+      {
+        "query": "what is providing customer service",
+        "answer": "Providing customer service is “the act of taking care of the customer’s needs by providing and delivering professional, helpful, high‑quality service and assistance before, during, and after the custo",
+        "judge_reason": "The prompt’s context supports the definition and the idea of meeting customer needs, but it does not directly mention \"courteous\" interactions."
+      },
+      {
+        "query": "how long for stitches to be removed",
+        "answer": "The time a surgeon keeps sutures in place depends on the type of wound and the provider’s instructions:\n\n* For many skin closures the stitches are left in **at least 5 days but no longer than 8 days**",
+        "judge_reason": "The answer adds unsupported generalizations and specifics (e.g., 'for many skin closures' and the provider/appointment wording) beyond what the context directly states."
+      },
+      {
+        "query": "what is the size and weight of a whitetail deer",
+        "answer": "The typical adult white‑tailed deer varies by sex: a mature female (doe) usually weighs about **100 lb**, while a mature male (buck) is roughly **200 lb**. The overall size of a white‑tailed deer also",
+        "judge_reason": "The answer adds paraphrased specifics about mature female and male deer, but the context only directly supports the weight figures and general dependence on species, age, and sex, not the exact wording or distinction made."
+      }
+    ],
+    "hallucinated_examples": [
+      {
+        "query": "what is the purpose of the passive-interface command?",
+        "answer": "The passive‑interface command is used to suppress routing updates on a selected interface. It stops the router from exchanging routing information on that interface (i.e., it prevents the receipt of u",
+        "judge_reason": "The answer claims it stops sending updates and exchanges normally on other interfaces, but the context only directly supports suppressing routing updates on some interfaces and does not support the extra EIGRP-specific claim."
+      },
+      {
+        "query": "how to do citations in an essay",
+        "answer": "Citations in an essay have two parts — an in‑text citation that appears where you use the source, and a full entry for that source in a Works Cited (bibliography) after the paper [1].\n\n**1. In‑text ci",
+        "judge_reason": "The answer adds unsupported specifics such as a general rule to cite immediately after material and details about matching entries for each source type."
+      },
+      {
+        "query": "what is providing customer service",
+        "answer": "Providing customer service is “the act of taking care of the customer’s needs by providing and delivering professional, helpful, high‑quality service and assistance before, during, and after the custo",
+        "judge_reason": "The prompt’s context supports the definition and the idea of meeting customer needs, but it does not directly mention \"courteous\" interactions."
+      },
+      {
+        "query": "how long for stitches to be removed",
+        "answer": "The time a surgeon keeps sutures in place depends on the type of wound and the provider’s instructions:\n\n* For many skin closures the stitches are left in **at least 5 days but no longer than 8 days**",
+        "judge_reason": "The answer adds unsupported generalizations and specifics (e.g., 'for many skin closures' and the provider/appointment wording) beyond what the context directly states."
+      },
+      {
+        "query": "what is the size and weight of a whitetail deer",
+        "answer": "The typical adult white‑tailed deer varies by sex: a mature female (doe) usually weighs about **100 lb**, while a mature male (buck) is roughly **200 lb**. The overall size of a white‑tailed deer also",
+        "judge_reason": "The answer adds paraphrased specifics about mature female and male deer, but the context only directly supports the weight figures and general dependence on species, age, and sex, not the exact wording or distinction made."
+      }
+    ]
+  },
+  "correctness": {
+    "check": "correctness (reference-based, LLM-as-judge)",
+    "num_evaluated": 50,
+    "correct_rate": 0.66,
+    "incorrect_examples": [
+      {
+        "query": "when was power rangers released in europe",
+        "reference_answer": "Power rangers was released on 2nd November in Europe.",
+        "answer": "Power Rangers: Super Legends was released in Europe on **2 November** (the European launch date)【1†L1-L3】【2†L1-L3】.",
+        "judge_reason": "It refers to Power Rangers: Super Legends rather than Power Rangers, so it does not match the reference answer."
+      },
+      {
+        "query": "how long do fly eggs live",
+        "reference_answer": "An adults fly eggs usually live for 15 to 25 days.",
+        "answer": "I don't have enough information to answer that.",
+        "judge_reason": "The answer refuses to answer, but the reference provides a specific lifespan range."
+      },
+      {
+        "query": "what types of actions are controlled by smooth muscles",
+        "reference_answer": "Hormones, neurotransmitters and other chemicals such as calcium and potassium are types of actions that are controlled by smooth muscles.",
+        "answer": "Smooth muscles control **involuntary actions** – the automatic contractions of organs and blood vessels. Their contractions are not under voluntary (conscious) control; instead they are triggered by t",
+        "judge_reason": "The answer does not match the reference’s key point about hormones, neurotransmitters, calcium, and potassium controlling smooth muscles."
+      },
+      {
+        "query": "why did laozi say that idea",
+        "reference_answer": "Laozi thought that both Communism and Legalism were a little off with there ideas to re-create a better society, so he created the idea of Daoism.",
+        "answer": "I don't have enough information to answer that confidently based on the retrieved context.",
+        "judge_reason": "The answer refuses to answer, but the reference states Laozi thought Communism and Legalism were off and created Daoism as the alternative."
+      },
+      {
+        "query": "gas dryers running cost",
+        "reference_answer": "Gas dryers cost anywhere from about $350 to $1,600.",
+        "answer": "A typical gas‑dryer uses about **0.11 therm of natural gas per hour**, and the utility charges roughly **$0.11 for that gas each hour**. In addition, the dryer’s electric motor and fan draw electricit",
+        "judge_reason": "The answer discusses hourly operating cost, but the reference answer is about the purchase price range of gas dryers."
+      }
+    ]
+  },
+  "reliability": {
+    "check": "reliability / \"lying factor\" (answerable-vs-answered 2x2)",
+    "num_answerable_evaluated": 50,
+    "num_unanswerable_evaluated": 50,
+    "false_refusal_rate": 0.12,
+    "false_refusal_examples": [
+      {
+        "query": "why did laozi say that idea",
+        "expected_answer": "Laozi thought that both Communism and Legalism were a little off with there ideas to re-create a better society, so he created the idea of Daoism."
+      },
+      {
+        "query": "who owns the w hotel",
+        "expected_answer": "Stephen Ross owns The W Hotel."
+      },
+      {
+        "query": "what's the population of guatemala",
+        "expected_answer": "The population of Guatemala is 14,373,472."
+      },
+      {
+        "query": "cost of an average wedding cake",
+        "expected_answer": "The national average cost of wedding cakes will be $451 in 2013, jumping to $466 in 2014."
+      },
+      {
+        "query": "define hoofed",
+        "expected_answer": "Having a hoof or hoofs."
+      }
+    ],
+    "false_confidence_rate": 0.84,
+    "false_confidence_examples": [
+      {
+        "query": "how to do citations in an essay",
+        "fabricated_answer": "Citations in an essay have two parts — an in‑text citation that appears where you use the source, and a full entry for that source in a Works Cited (bibliography) after the paper [1].\n\n**1. In‑text ci"
+      },
+      {
+        "query": "who is the person that created transformers",
+        "fabricated_answer": "I don't have enough information to answer that."
+      },
+      {
+        "query": "can hyponatremia cause vertigo",
+        "fabricated_answer": "I don't have enough information to answer that."
+      },
+      {
+        "query": "erie insurance corporate address",
+        "fabricated_answer": "I don't have enough information to answer that."
+      },
+      {
+        "query": "what is tlr development",
+        "fabricated_answer": "TLR development refers to an early‑infancy stage in which a “TLR” structure is forming as the child’s body grows and matures.  If a child still has a retained TLR, it suggests they moved through this "
+      }
+    ]
+  },
+  "latency": {
+    "check": "latency",
+    "num_evaluated": 100,
+    "embed": {
+      "avg_ms": 34.51,
+      "p50_ms": 27.29,
+      "p95_ms": 50.24,
+      "p99_ms": 139.17
+    },
+    "search": {
+      "avg_ms": 0.47,
+      "p50_ms": 0.21,
+      "p95_ms": 1.7,
+      "p99_ms": 5.64
+    },
+    "retrieval_total": {
+      "avg_ms": 46.4,
+      "p50_ms": 35.21,
+      "p95_ms": 63.58,
+      "p99_ms": 378.01
+    },
+    "generation": {
+      "avg_ms": 5433.24,
+      "p50_ms": 5838.21,
+      "p95_ms": 7292.44,
+      "p99_ms": 7690.06
+    },
+    "retrieval_latency_budget_ms": 50.0,
+    "retrieval_within_budget": false,
+    "generation_latency_target_ms": 1500.0,
+    "generation_within_target": false
+  }
+}
